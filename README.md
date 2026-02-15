@@ -15,8 +15,15 @@ Each folder is a complete GameMaker project for that day's game, built from scra
 | 5 | 2048 but Atoms | Feb 13, 2026 | Swipe to merge atoms and climb the periodic table |
 | 6 | Noodle Rush | Feb 14, 2026 | Seat customers, cook noodles, collect tips in a diner sim |
 | 7 | Dungeon Merge | Feb 15, 2026 | Merge-3 dungeon crawler — match tiles to fight through floors |
+| 8 | Subway Surfers Toronto | Feb 15, 2026 | 3-lane endless runner — dodge barriers, ride streetcars, collect coin waves |
 
 ## Devlogs
+
+### Day 8: Subway Surfers Toronto
+
+3-lane endless runner inspired by Subway Surfers, themed around Toronto. Swipe left/right to dodge, swipe up to jump over barriers or land on top of TTC streetcars and ride them. Coins spawn in waves of 5-10 in a line. CN Tower silhouette in the background.
+
+Train riding was the hardest system — required deferred jump ending (don't finalize jump state until after collision checks), fixed screen-position riding (player stays put, train scrolls past), dismount grace period (15 frames of invincibility), and smooth gravity-based falling on dismount. Five tuning passes to get object sizes, spawn distances, landing timing, and coin spacing feeling right.
 
 ### Day 7: Dungeon Merge
 
