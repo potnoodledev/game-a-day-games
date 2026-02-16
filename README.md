@@ -16,8 +16,15 @@ Each folder is a complete GameMaker project for that day's game, built from scra
 | 6 | Noodle Rush | Feb 14, 2026 | Seat customers, cook noodles, collect tips in a diner sim |
 | 7 | Dungeon Merge | Feb 15, 2026 | Merge-3 dungeon crawler — match tiles to fight through floors |
 | 8 | Subway Surfers Toronto | Feb 15, 2026 | 3-lane endless runner — dodge barriers, ride streetcars, collect coin waves |
+| 9 | Pilates Flow | Feb 16, 2026 | 40s pose sequence — hold, breathe, balance minigames with continuous scoring |
 
 ## Devlogs
+
+### Day 9: Pilates Flow
+
+40-second pose sequence game with three pilates-themed minigames: HOLD (tap and hold through a colour-coded zone bar — the stick figure trembles harder the longer you hold), BREATHE (tap when a pulsing circle crosses concentric target rings — +5/+3/+2 based on timing accuracy), and BALANCE (tap to reverse a drifting dot — points stream in faster near center). Session preview shows all upcoming poses before gameplay starts.
+
+Three iterations: V1 was a stacking tower (too generic), V2 added the minigame system with discrete PERFECT/GREAT/GOOD ratings and hearts, V3 switched to continuous scoring — points accumulate every frame based on performance, no lives, timer-only sessions. Stick figure animation uses 8 poses defined as 22-value joint arrays (11 joints x 2 coords) with smooth lerp transitions. During HOLD the figure wobbles with increasing intensity, during BALANCE it tilts, during BREATHE its chest expands and contracts. Difficulty scales +0.2 every 2 poses completed.
 
 ### Day 8: Subway Surfers Toronto
 
