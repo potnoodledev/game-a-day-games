@@ -17,8 +17,15 @@ Each folder is a complete GameMaker project for that day's game, built from scra
 | 7 | Dungeon Merge | Feb 15, 2026 | Merge-3 dungeon crawler — match tiles to fight through floors |
 | 8 | Subway Surfers Toronto | Feb 15, 2026 | 3-lane endless runner — dodge barriers, ride streetcars, collect coin waves |
 | 9 | Pilates Flow | Feb 16, 2026 | 40s pose sequence — hold, breathe, balance minigames with continuous scoring |
+| 10 | Gem Forge | Feb 17, 2026 | Balatro-style match-3 — swap gems, hit score targets, pick modifier cards between rounds |
 
 ## Devlogs
+
+### Day 10: Gem Forge
+
+Balatro-inspired run-based match-3 with modifier card selection between rounds. Modifiers grant special gem types: bombs (3x3), lightning (row clear), multipliers (2x score), cascade (destroy 3 random). Each modifier has limited uses that diminish with stacking (5→3→2→1). Three design iterations: V1 had passive score multipliers (too abstract), V2 added visual special gems with permanent chance (Cross Blast was OP), V3 switched to finite gem counts with diminishing returns.
+
+Juice pass added screen shake, expanding ring FX for explosions, horizontal flash for lightning, rotating sparkles for cascade, pop circles for clears. L/T intersection detection finds perpendicular match overlaps and 3x3 blasts them. Confetti celebration between rounds prevents accidental card picks. Card selection animates with glow before applying. Debugging highlight: GML silently returns undefined for missing struct fields — a 404 error response was parsed as game state, quietly trashing all variables without triggering the try-catch until the grid access.
 
 ### Day 9: Pilates Flow
 
