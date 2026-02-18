@@ -18,8 +18,15 @@ Each folder is a complete GameMaker project for that day's game, built from scra
 | 8 | Subway Surfers Toronto | Feb 15, 2026 | 3-lane endless runner — dodge barriers, ride streetcars, collect coin waves |
 | 9 | Pilates Flow | Feb 16, 2026 | 40s pose sequence — hold, breathe, balance minigames with continuous scoring |
 | 10 | Gem Forge | Feb 17, 2026 | Balatro-style match-3 — swap gems, hit score targets, pick modifier cards between rounds |
+| 11 | Ricochet | Feb 18, 2026 | Drag-to-aim ball bouncer — hit all targets with 3 shots, combos, wall reflections, obstacles |
 
 ## Devlogs
+
+### Day 11: Ricochet
+
+Drag-to-aim ball bouncing puzzle — launch a ball to hit coloured targets by ricocheting off walls. 3 shots per round, 8 max bounces, dotted preview line shows trajectory with bounce points. Combo scoring for multi-target hits in a single shot. Obstacles (angled line segments) appear from round 4+, deflecting the ball using line-normal reflection math.
+
+Zero sprites — all procedural circles, lines, and colored shapes. Juice: screen shake on bounces, expanding ring FX on target hits, fading ball trail, pulsing target glow, floating score popups with combo multipliers. Built in one session as a creative freedom day (missed community voting).
 
 ### Day 10: Gem Forge
 
