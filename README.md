@@ -19,8 +19,15 @@ Each folder is a complete GameMaker project for that day's game, built from scra
 | 9 | Pilates Flow | Feb 16, 2026 | 40s pose sequence — hold, breathe, balance minigames with continuous scoring |
 | 10 | Gem Forge | Feb 17, 2026 | Balatro-style match-3 — swap gems, hit score targets, pick modifier cards between rounds |
 | 11 | Ricochet | Feb 18, 2026 | Drag-to-aim ball bouncer — hit all targets with 3 shots, combos, wall reflections, obstacles |
+| 12 | Game of Life | Feb 19, 2026 | Rogue-like Conway's Game of Life — place cells around walls and targets, pick power-ups between rounds |
 
 ## Devlogs
+
+### Day 12: Game of Life
+
+Conway's Game of Life goes rogue-like! Place cells on a 24x30 grid with procedurally generated walls (cluster-grown obstacles with center safe zone) and gold target diamonds. Five rounds of escalating difficulty — budget decreases per round, walls get denser, targets get more numerous. Between rounds, pick one of two power-ups: +3 Budget (permanent), Less Walls (one-round), +2 Targets (one-round), or 2x Score (one-round).
+
+Scoring rewards peak population, survival duration, target hits, and pattern stability. Started as a blank canvas prototype, redesigned into a strategic placement game after user feedback. The nastiest bug: GameMaker's HTML5 obfuscator mangles variable names but not JSON keys, so `state_data.points` silently returned `undefined` — crashing `end_round()` when it tried `points += round_score`. Fix: skip state restoration entirely since sessions start fresh.
 
 ### Day 11: Ricochet
 
