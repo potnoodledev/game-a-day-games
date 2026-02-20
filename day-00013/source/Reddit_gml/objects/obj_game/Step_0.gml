@@ -3,34 +3,35 @@
 if (game_state == 0) {
     if (state_loaded) {
         game_state = 1;
-        // Apply difficulty for current level
         var _diff_idx = min(level - 1, array_length(diff_table) - 1);
         var _diff = diff_table[_diff_idx];
         num_colors = _diff[0];
         order_spawn_rate = _diff[3] * 60;
-        order_spawn_timer = 60; // first order in 1 second
+        order_spawn_timer = 60;
     }
     exit;
 }
 
 // === STATE 2: GAME OVER ===
 if (game_state == 2) {
-    if (game_over_tap_delay > 0) {
-        game_over_tap_delay -= 1;
-    }
+    if (game_over_tap_delay > 0) game_over_tap_delay -= 1;
     if (game_over_tap_delay <= 0 && device_mouse_check_button_pressed(0, mb_left)) {
-        // Restart
         game_state = 1;
         points = 0;
         level = 1;
         lives = 3;
         combo = 1;
         combo_timer = 0;
+        combo_floor = 1;
+        max_combo = 1;
         orders_completed = 0;
         orders = [];
         assembly = [];
         assembly_slide = [];
         popups = [];
+        ring_fx = [];
+        complete_fx = [];
+        smoke_particles = [];
         score_submitted = false;
         orders_for_next_level = 5;
         shake_timer = 0;
@@ -38,6 +39,9 @@ if (game_state == 2) {
         shake_y = 0;
         red_flash_timer = 0;
         wrong_ship_timer = 0;
+        belt_full_timer = 0;
+        freeze_timer = 0;
+        powerup_state = 0;
         station_flash = [0, 0, 0, 0, 0];
         var _diff = diff_table[0];
         num_colors = _diff[0];
@@ -50,7 +54,7 @@ if (game_state == 2) {
 
 // === STATE 1: PLAYING ===
 
-// --- Update screen effects ---
+// --- Always update visual effects ---
 if (shake_timer > 0) {
     shake_timer -= 1;
     shake_x = irandom_range(-shake_intensity, shake_intensity) * (shake_timer / 10);
@@ -59,64 +63,180 @@ if (shake_timer > 0) {
     shake_x = 0;
     shake_y = 0;
 }
+if (red_flash_timer > 0) red_flash_timer -= 1;
+if (wrong_ship_timer > 0) wrong_ship_timer -= 1;
+if (belt_full_timer > 0) belt_full_timer -= 1;
+if (freeze_timer > 0) freeze_timer -= 1;
 
-if (red_flash_timer > 0) {
-    red_flash_timer -= 1;
-}
-
-if (wrong_ship_timer > 0) {
-    wrong_ship_timer -= 1;
-}
-
-// --- Update station flash timers ---
 var _fi = 0;
 while (_fi < 5) {
-    if (station_flash[_fi] > 0) {
-        station_flash[_fi] -= 1;
-    }
+    if (station_flash[_fi] > 0) station_flash[_fi] -= 1;
     _fi += 1;
 }
 
-// --- Update assembly slide-in ---
+// Assembly slide-in
 var _si = 0;
 while (_si < array_length(assembly_slide)) {
     if (assembly_slide[_si] != 0) {
-        assembly_slide[_si] = assembly_slide[_si] * 0.7; // lerp toward 0
-        if (abs(assembly_slide[_si]) < 1) {
-            assembly_slide[_si] = 0;
-        }
+        assembly_slide[_si] = assembly_slide[_si] * 0.7;
+        if (abs(assembly_slide[_si]) < 1) assembly_slide[_si] = 0;
     }
     _si += 1;
 }
 
-// --- Update order timers ---
+// Ring FX
+var _ri = array_length(ring_fx) - 1;
+while (_ri >= 0) {
+    ring_fx[_ri].timer -= 1;
+    ring_fx[_ri].radius += (ring_fx[_ri].max_radius - ring_fx[_ri].radius) * 0.15;
+    if (ring_fx[_ri].timer <= 0) array_delete(ring_fx, _ri, 1);
+    _ri -= 1;
+}
+
+// Completion FX
+var _cfi = array_length(complete_fx) - 1;
+while (_cfi >= 0) {
+    complete_fx[_cfi].timer -= 1;
+    if (complete_fx[_cfi].timer <= 0) array_delete(complete_fx, _cfi, 1);
+    _cfi -= 1;
+}
+
+// Smoke particles
+smoke_spawn_timer -= 1;
+if (smoke_spawn_timer <= 0 && window_width > 0) {
+    smoke_spawn_timer = 6 + irandom(6);
+    var _pad = max(8, window_width * 0.03);
+    array_push(smoke_particles, {
+        x: _pad + irandom(floor(window_width - _pad * 2)),
+        y: belt_area_y + belt_area_h,
+        alpha: 0.15 + random(0.1),
+        size: 2 + random(3),
+        vy: -0.3 - random(0.4)
+    });
+}
+var _spi = array_length(smoke_particles) - 1;
+while (_spi >= 0) {
+    smoke_particles[_spi].y += smoke_particles[_spi].vy;
+    smoke_particles[_spi].alpha -= 0.003;
+    if (smoke_particles[_spi].alpha <= 0) array_delete(smoke_particles, _spi, 1);
+    _spi -= 1;
+}
+
+// Popups
+var _pi = array_length(popups) - 1;
+while (_pi >= 0) {
+    popups[_pi].timer -= 1;
+    popups[_pi].y -= 0.5;
+    if (popups[_pi].timer <= 0) array_delete(popups, _pi, 1);
+    _pi -= 1;
+}
+
+// Conveyor
+conveyor_offset = (conveyor_offset + 1) mod 20;
+
+// --- Tutorial overlay ---
+if (!tutorial_done) {
+    if (device_mouse_check_button_pressed(0, mb_left)) {
+        tutorial_done = true;
+    }
+    exit;
+}
+
+// --- Power-up selection mode ---
+if (powerup_state == 1) {
+    if (device_mouse_check_button_pressed(0, mb_left)) {
+        var _mx = device_mouse_x_to_gui(0);
+        var _my = device_mouse_y_to_gui(0);
+        var _selected = -1;
+
+        if (_mx >= powerup_card_1.x1 && _mx <= powerup_card_1.x2 && _my >= powerup_card_1.y1 && _my <= powerup_card_1.y2) {
+            _selected = 0;
+        }
+        if (_mx >= powerup_card_2.x1 && _mx <= powerup_card_2.x2 && _my >= powerup_card_2.y1 && _my <= powerup_card_2.y2) {
+            _selected = 1;
+        }
+
+        if (_selected >= 0) {
+            var _choice = powerup_choices[_selected];
+
+            // Apply power-up
+            if (_choice == 0) {
+                freeze_timer = 300; // FREEZE: 5 seconds
+                array_push(popups, {x: window_width * 0.5, y: window_height * 0.4, text: "FROZEN!", color: $db9834, timer: 90, max_timer: 90});
+            }
+            if (_choice == 1) {
+                lives = min(lives + 1, max_lives); // EXTRA LIFE
+                array_push(popups, {x: window_width * 0.5, y: window_height * 0.4, text: "+1 LIFE!", color: $3c4ce7, timer: 90, max_timer: 90});
+            }
+            if (_choice == 2) {
+                combo_floor = 2; // COMBO LOCK
+                combo = max(combo, 2);
+                combo_timer = combo_max_timer;
+                array_push(popups, {x: window_width * 0.5, y: window_height * 0.4, text: "COMBO LOCKED!", color: $71cc2e, timer: 90, max_timer: 90});
+            }
+            if (_choice == 3) {
+                // TIME WARP: +50% time on all orders
+                var _twi = 0;
+                while (_twi < array_length(orders)) {
+                    orders[_twi].timer = min(orders[_twi].timer + floor(orders[_twi].max_timer * 0.5), orders[_twi].max_timer);
+                    _twi += 1;
+                }
+                array_push(popups, {x: window_width * 0.5, y: window_height * 0.4, text: "TIME WARP!", color: $0fc4f1, timer: 90, max_timer: 90});
+            }
+
+            // Advance level
+            level += 1;
+            orders_for_next_level += 5;
+            var _new_diff_idx = min(level - 1, array_length(diff_table) - 1);
+            var _new_diff = diff_table[_new_diff_idx];
+            num_colors = _new_diff[0];
+            order_spawn_rate = _new_diff[3] * 60;
+            layout_dirty = true;
+            powerup_state = 0;
+
+            array_push(popups, {x: window_width * 0.5, y: window_height * 0.5, text: "LEVEL " + string(level) + "!", color: $ffffff, timer: 120, max_timer: 120});
+        }
+    }
+    exit;
+}
+
+// --- Normal gameplay ---
+
+// Update order timers (skip if frozen)
 var _i = array_length(orders) - 1;
 while (_i >= 0) {
-    orders[_i].timer -= 1;
+    if (freeze_timer <= 0) {
+        orders[_i].timer -= 1;
+    }
     if (orders[_i].timer <= 0) {
-        // Order expired — lose a life
         lives -= 1;
-        // Red flash
         red_flash_timer = red_flash_max;
-        // Shake
         shake_timer = 10;
         shake_intensity = 4;
-        // Popup
         var _pop_x = window_width * 0.5;
         var _pop_y = order_area_y + _i * order_row_h + order_row_h * 0.5;
         array_push(popups, {x: _pop_x, y: _pop_y, text: "EXPIRED!", color: $3c4ce7, timer: 90, max_timer: 90});
-        // Reset combo
-        combo = 1;
+        combo = combo_floor;
         combo_timer = 0;
         array_delete(orders, _i, 1);
     }
     _i -= 1;
 }
 
-// --- Spawn new orders ---
+// Sort orders by timer (most urgent first) — bubble sort, max 4 items
+var _k = 0;
+while (_k < array_length(orders) - 1) {
+    if (orders[_k].timer > orders[_k + 1].timer) {
+        var _temp = orders[_k];
+        orders[_k] = orders[_k + 1];
+        orders[_k + 1] = _temp;
+    }
+    _k += 1;
+}
+
+// Spawn new orders
 order_spawn_timer -= 1;
 if (order_spawn_timer <= 0 && array_length(orders) < max_orders) {
-    // Generate recipe
     var _diff_idx = min(level - 1, array_length(diff_table) - 1);
     var _diff = diff_table[_diff_idx];
     var _max_len = _diff[1];
@@ -133,30 +253,32 @@ if (order_spawn_timer <= 0 && array_length(orders) < max_orders) {
     var _timer_frames = _timer_sec * 60;
     var _reward = _recipe_len * 10 + irandom(5);
 
-    // Bonus order: 15% chance, shorter timer, 3x reward
     var _is_bonus = (irandom(99) < 15);
     if (_is_bonus) {
         _timer_frames = floor(_timer_frames * 0.6);
         _reward = _reward * 3;
     }
 
+    // Random product name
+    var _pname = product_prefixes[irandom(array_length(product_prefixes) - 1)] + " " + product_suffixes[irandom(array_length(product_suffixes) - 1)];
+
     var _order = {
         recipe: _recipe,
         timer: _timer_frames,
         max_timer: _timer_frames,
         reward: _reward,
-        is_bonus: _is_bonus
+        is_bonus: _is_bonus,
+        name: _pname
     };
     array_push(orders, _order);
-
     order_spawn_timer = order_spawn_rate;
 }
 
-// --- Combo timer ---
-if (combo > 1) {
+// Combo timer
+if (combo > combo_floor) {
     combo_timer -= 1;
     if (combo_timer <= 0) {
-        combo = 1;
+        combo = combo_floor;
     }
 }
 
@@ -165,27 +287,28 @@ if (device_mouse_check_button_pressed(0, mb_left)) {
     var _mx = device_mouse_x_to_gui(0);
     var _my = device_mouse_y_to_gui(0);
 
-    // Check station buttons
+    // Station buttons
     var _s = 0;
     while (_s < array_length(station_buttons)) {
         var _btn = station_buttons[_s];
         if (_mx >= _btn.x1 && _mx <= _btn.x2 && _my >= _btn.y1 && _my <= _btn.y2) {
             if (array_length(assembly) < max_assembly) {
                 array_push(assembly, _btn.color_idx);
-                // Slide-in from below
                 array_push(assembly_slide, -60);
-                // Flash feedback
                 station_flash[_btn.color_idx] = 12;
+            } else {
+                // Belt full!
+                belt_full_timer = 15;
+                array_push(popups, {x: window_width * 0.5, y: belt_area_y + belt_area_h * 0.5, text: "BELT FULL!", color: $3c4ce7, timer: 40, max_timer: 40});
             }
             break;
         }
         _s += 1;
     }
 
-    // Check SHIP button
+    // SHIP button
     if (_mx >= ship_btn.x1 && _mx <= ship_btn.x2 && _my >= ship_btn.y1 && _my <= ship_btn.y2) {
         if (array_length(assembly) > 0) {
-            // Try to match assembly to an order
             var _match_idx = -1;
             var _oi = 0;
             while (_oi < array_length(orders)) {
@@ -209,85 +332,76 @@ if (device_mouse_check_button_pressed(0, mb_left)) {
             }
 
             if (_match_idx >= 0) {
-                // Complete the order!
                 var _order = orders[_match_idx];
                 var _base_reward = _order.reward;
-
-                // Level bonus: +10% per level
                 var _level_mult = 1.0 + (level - 1) * 0.1;
-
-                // Quick completion bonus: extra if >50% timer remaining
                 var _time_ratio = _order.timer / _order.max_timer;
                 var _speed_bonus = 0;
                 if (_time_ratio > 0.5) {
                     _speed_bonus = floor(_base_reward * 0.5);
                 }
-
                 var _earned = floor((_base_reward + _speed_bonus) * combo * _level_mult);
                 points += _earned;
 
-                // Screen shake on ship
+                // Screen shake + ring FX
                 shake_timer = 8;
                 shake_intensity = 3;
+                var _ring_x = window_width * 0.5;
+                var _ring_y = belt_area_y + belt_area_h * 0.5;
+                array_push(ring_fx, {x: _ring_x, y: _ring_y, radius: 10, max_radius: 80, timer: 20, max_timer: 20, color: $71cc2e});
+                if (_order.is_bonus) {
+                    array_push(ring_fx, {x: _ring_x, y: _ring_y, radius: 10, max_radius: 120, timer: 25, max_timer: 25, color: $0fc4f1});
+                }
+
+                // Completion flash at order row
+                array_push(complete_fx, {row_y: order_area_y + _match_idx * order_row_h, timer: 20, max_timer: 20});
 
                 // Popup
                 var _pop_x = window_width * 0.5;
                 var _pop_y = belt_area_y + belt_area_h * 0.5;
                 var _pop_text = "+" + string(_earned);
-                if (_speed_bonus > 0) {
-                    _pop_text += " FAST!";
-                }
-                if (_order.is_bonus) {
-                    _pop_text += " BONUS!";
-                }
+                if (_speed_bonus > 0) _pop_text += " FAST!";
+                if (_order.is_bonus) _pop_text += " BONUS!";
                 array_push(popups, {x: _pop_x, y: _pop_y, text: _pop_text, color: $0fc4f1, timer: 90, max_timer: 90});
 
                 // Increase combo
                 combo = min(combo + 1, 4);
+                if (combo > max_combo) max_combo = combo;
                 combo_timer = combo_max_timer;
                 if (combo >= 3) {
                     array_push(popups, {x: _pop_x, y: _pop_y - 30, text: "COMBO x" + string(combo) + "!", color: $71cc2e, timer: 60, max_timer: 60});
                 }
 
-                // Remove order
                 array_delete(orders, _match_idx, 1);
                 orders_completed += 1;
-
-                // Clear assembly
                 assembly = [];
                 assembly_slide = [];
 
-                // Check level up
+                // Level up → power-up selection
                 if (orders_completed >= orders_for_next_level) {
-                    level += 1;
-                    orders_for_next_level += 5;
-                    var _new_diff_idx = min(level - 1, array_length(diff_table) - 1);
-                    var _new_diff = diff_table[_new_diff_idx];
-                    num_colors = _new_diff[0];
-                    order_spawn_rate = _new_diff[3] * 60;
-                    layout_dirty = true;
-
-                    array_push(popups, {x: window_width * 0.5, y: window_height * 0.5, text: "LEVEL " + string(level) + "!", color: $ffffff, timer: 120, max_timer: 120});
+                    powerup_state = 1;
+                    var _p1 = irandom(3);
+                    var _p2 = irandom(2);
+                    if (_p2 >= _p1) _p2 += 1;
+                    powerup_choices = [_p1, _p2];
                 }
             } else {
-                // WRONG SHIP — no match found! Penalty: deduct 2s from all orders
+                // Wrong ship penalty
                 wrong_ship_timer = 15;
                 shake_timer = 6;
                 shake_intensity = 3;
-                var _pi = 0;
-                while (_pi < array_length(orders)) {
-                    orders[_pi].timer -= 120; // 2 seconds penalty
-                    if (orders[_pi].timer < 1) {
-                        orders[_pi].timer = 1;
-                    }
-                    _pi += 1;
+                var _pi2 = 0;
+                while (_pi2 < array_length(orders)) {
+                    orders[_pi2].timer -= 120;
+                    if (orders[_pi2].timer < 1) orders[_pi2].timer = 1;
+                    _pi2 += 1;
                 }
                 array_push(popups, {x: window_width * 0.5, y: belt_area_y, text: "NO MATCH! -2s", color: $3c4ce7, timer: 60, max_timer: 60});
             }
         }
     }
 
-    // Check UNDO button
+    // UNDO button
     if (_mx >= undo_btn.x1 && _mx <= undo_btn.x2 && _my >= undo_btn.y1 && _my <= undo_btn.y2) {
         if (array_length(assembly) > 0) {
             array_pop(assembly);
@@ -295,7 +409,7 @@ if (device_mouse_check_button_pressed(0, mb_left)) {
         }
     }
 
-    // Check CLEAR button
+    // CLEAR button
     if (_mx >= clear_btn.x1 && _mx <= clear_btn.x2 && _my >= clear_btn.y1 && _my <= clear_btn.y2) {
         assembly = [];
         assembly_slide = [];
@@ -308,29 +422,12 @@ if (lives <= 0) {
     final_score = points;
     final_level = level;
     final_orders = orders_completed;
-    final_combo = combo;
-    if (points > best_score) {
-        best_score = points;
-    }
+    final_combo = max_combo;
+    if (points > best_score) best_score = points;
     game_over_tap_delay = 90;
-
     if (!score_submitted) {
         score_submitted = true;
         api_submit_score(points, undefined);
-        api_save_state(level, { points: points, level: level, lives: 0, orders_completed: orders_completed, combo: combo, best_score: best_score }, undefined);
+        api_save_state(level, { points: points, level: level, lives: 0, orders_completed: orders_completed, combo: combo, best_score: best_score, tutorial_done: tutorial_done }, undefined);
     }
 }
-
-// --- Update popups ---
-var _pi = array_length(popups) - 1;
-while (_pi >= 0) {
-    popups[_pi].timer -= 1;
-    popups[_pi].y -= 0.5;
-    if (popups[_pi].timer <= 0) {
-        array_delete(popups, _pi, 1);
-    }
-    _pi -= 1;
-}
-
-// --- Conveyor animation ---
-conveyor_offset = (conveyor_offset + 1) mod 20;

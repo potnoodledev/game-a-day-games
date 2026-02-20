@@ -15,7 +15,6 @@ view_camera[0] = _camera;
 
 display_set_gui_size(_w, _h);
 
-// Recalculate layout if window size changed
 if (_w != window_width || _h != window_height) {
     window_width = _w;
     window_height = _h;
@@ -27,27 +26,22 @@ if (layout_dirty) {
 
     var _pad = max(8, _w * 0.03);
 
-    // HUD area at top
     hud_h = max(50, _h * 0.08);
 
-    // Button area at bottom — 3 buttons: UNDO, SHIP, CLEAR
     var _btn_h = max(50, _h * 0.07);
     button_area_y = _h - _btn_h - _pad;
 
-    // Station area above buttons
     station_area_h = max(70, _h * 0.12);
     station_area_y = button_area_y - station_area_h - _pad * 0.5;
 
-    // Belt area above stations
     belt_area_h = max(50, _h * 0.10);
     belt_area_y = station_area_y - belt_area_h - _pad * 0.5;
 
-    // Order area fills remaining space between HUD and belt
     order_area_y = hud_h + _pad;
     order_area_h = belt_area_y - order_area_y - _pad;
     order_row_h = order_area_h / max_orders;
 
-    // Build station button rects
+    // Station buttons (square)
     station_buttons = [];
     var _station_w = (_w - _pad * 2) / num_colors;
     var _btn_size = min(_station_w * 0.8, station_area_h * 0.85);
@@ -86,4 +80,18 @@ if (layout_dirty) {
     clear_btn.y1 = button_area_y;
     clear_btn.x2 = _w - _pad;
     clear_btn.y2 = button_area_y + _btn_h;
+
+    // Power-up cards
+    var _card_w = (_w - _pad * 3) * 0.45;
+    var _card_h = _h * 0.28;
+    var _card_y = _h * 0.38;
+    powerup_card_1.x1 = _w * 0.5 - _card_w - _pad * 0.5;
+    powerup_card_1.y1 = _card_y;
+    powerup_card_1.x2 = _w * 0.5 - _pad * 0.5;
+    powerup_card_1.y2 = _card_y + _card_h;
+
+    powerup_card_2.x1 = _w * 0.5 + _pad * 0.5;
+    powerup_card_2.y1 = _card_y;
+    powerup_card_2.x2 = _w * 0.5 + _card_w + _pad * 0.5;
+    powerup_card_2.y2 = _card_y + _card_h;
 }

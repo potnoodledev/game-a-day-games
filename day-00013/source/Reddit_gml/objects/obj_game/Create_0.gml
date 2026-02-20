@@ -8,40 +8,44 @@ level = 1;
 points = 0;
 prev_points = 0;
 lives = 3;
-max_lives = 3;
+max_lives = 5;
 combo = 1;
 combo_timer = 0;
-combo_max_timer = 180; // 3 seconds at 60fps to keep combo alive
+combo_max_timer = 180;
+combo_floor = 1; // minimum combo (power-up can raise to 2)
 orders_completed = 0;
 orders_for_next_level = 5;
 best_score = 0;
+max_combo = 1;
 
 // === COLORS ===
-// All station colors: blue, green, red, yellow, purple
 all_colors = [
-    $db9834, // Blue  #3498db (BGR)
-    $71cc2e, // Green #2ecc71
-    $3c4ce7, // Red   #e74c3c
-    $0fc4f1, // Yellow #f1c40f
-    $b6599b  // Purple #9b59b6
+    $db9834, // Blue
+    $71cc2e, // Green
+    $3c4ce7, // Red
+    $0fc4f1, // Yellow
+    $b6599b  // Purple
 ];
 color_names = ["Blue", "Green", "Red", "Yellow", "Purple"];
-num_colors = 3; // starts with 3, grows with level
+num_colors = 3;
+
+// === PRODUCT NAMES ===
+product_prefixes = ["Mega", "Nano", "Turbo", "Ultra", "Mini", "Super", "Proto", "Hyper", "Micro", "Deluxe"];
+product_suffixes = ["Widget", "Gizmo", "Sprocket", "Gadget", "Module", "Doohickey", "Doodad", "Device", "Core", "Unit"];
 
 // === ORDERS ===
-// each order: {recipe, timer, max_timer, reward, is_bonus}
+// {recipe, timer, max_timer, reward, is_bonus, name}
 orders = [];
 max_orders = 4;
 order_spawn_timer = 0;
-order_spawn_rate = 240; // frames between spawns (4 sec at 60fps)
+order_spawn_rate = 240;
 
 // === ASSEMBLY BELT ===
-assembly = []; // current assembled colors
-assembly_slide = []; // x offset per item for slide-in animation
+assembly = [];
+assembly_slide = [];
 max_assembly = 6;
 
 // === DIFFICULTY TABLE ===
-// [colors, max_recipe_len, order_timer_sec, spawn_rate_sec]
 diff_table = [
     [3, 2, 15, 4.0],
     [3, 3, 13, 3.5],
@@ -50,8 +54,8 @@ diff_table = [
     [5, 5,  8, 2.0]
 ];
 
-// === FLOATING TEXT POPUPS ===
-popups = []; // {x, y, text, color, timer, max_timer}
+// === POPUPS ===
+popups = [];
 
 // === SCREEN EFFECTS ===
 shake_timer = 0;
@@ -61,18 +65,49 @@ shake_y = 0;
 red_flash_timer = 0;
 red_flash_max = 20;
 
+// === RING FX ===
+ring_fx = []; // {x, y, radius, max_radius, timer, max_timer, color}
+
+// === COMPLETION FX ===
+complete_fx = []; // {row_y, timer, max_timer}
+
+// === SMOKE PARTICLES ===
+smoke_particles = []; // {x, y, alpha, size, vy}
+smoke_spawn_timer = 0;
+
 // === STATION TAP FEEDBACK ===
-station_flash = [0, 0, 0, 0, 0]; // timer per station (max 5)
+station_flash = [0, 0, 0, 0, 0];
 
-// === WRONG SHIP FEEDBACK ===
+// === WRONG SHIP / BELT FULL FEEDBACK ===
 wrong_ship_timer = 0;
+belt_full_timer = 0;
 
-// === LAYOUT (recalculated in Step_2) ===
+// === FREEZE POWER-UP ===
+freeze_timer = 0;
+
+// === POWER-UP SELECTION ===
+powerup_state = 0; // 0=inactive, 1=choosing
+powerup_choices = [0, 1];
+powerup_names = ["FREEZE", "EXTRA LIFE", "COMBO LOCK", "TIME WARP"];
+powerup_descs = [];
+array_push(powerup_descs, "Pause all order timers for 5s");
+array_push(powerup_descs, "+1 life (max 5)");
+array_push(powerup_descs, "Combo stays at 2x minimum");
+array_push(powerup_descs, "+50% time on all orders");
+powerup_colors = [];
+array_push(powerup_colors, $db9834);
+array_push(powerup_colors, $3c4ce7);
+array_push(powerup_colors, $71cc2e);
+array_push(powerup_colors, $0fc4f1);
+
+// === TUTORIAL ===
+tutorial_done = false;
+
+// === LAYOUT ===
 window_width = 0;
 window_height = 0;
 layout_dirty = true;
 
-// Layout regions (set by calc_layout)
 hud_h = 0;
 order_area_y = 0;
 order_area_h = 0;
@@ -83,14 +118,13 @@ station_area_y = 0;
 station_area_h = 0;
 button_area_y = 0;
 
-// Station button rects: [{x1,y1,x2,y2,color_idx}]
 station_buttons = [];
-// Ship / Clear / Undo button rects
 ship_btn = {x1: 0, y1: 0, x2: 0, y2: 0};
 clear_btn = {x1: 0, y1: 0, x2: 0, y2: 0};
 undo_btn = {x1: 0, y1: 0, x2: 0, y2: 0};
+powerup_card_1 = {x1: 0, y1: 0, x2: 0, y2: 0};
+powerup_card_2 = {x1: 0, y1: 0, x2: 0, y2: 0};
 
-// Conveyor animation
 conveyor_offset = 0;
 
 // Game over
@@ -114,10 +148,13 @@ api_load_state(function(_status, _ok, _result, _payload) {
         if (variable_struct_exists(_state.data, "best_score")) {
             best_score = _state.data.best_score;
         }
+        if (variable_struct_exists(_state.data, "tutorial_done")) {
+            tutorial_done = _state.data.tutorial_done;
+        }
     }
     catch (_ex) {
-        api_save_state(0, { points: 0, level: 1, lives: 3, orders_completed: 0, combo: 1, best_score: 0 }, undefined);
+        api_save_state(0, { points: 0, level: 1, lives: 3, orders_completed: 0, combo: 1, best_score: 0, tutorial_done: false }, undefined);
     }
     state_loaded = true;
-    alarm[0] = 60 * 15; // save every 15 sec
+    alarm[0] = 60 * 15;
 });
