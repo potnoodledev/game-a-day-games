@@ -14,6 +14,7 @@ combo_timer = 0;
 combo_max_timer = 180; // 3 seconds at 60fps to keep combo alive
 orders_completed = 0;
 orders_for_next_level = 5;
+best_score = 0;
 
 // === COLORS ===
 // All station colors: blue, green, red, yellow, purple
@@ -28,13 +29,15 @@ color_names = ["Blue", "Green", "Red", "Yellow", "Purple"];
 num_colors = 3; // starts with 3, grows with level
 
 // === ORDERS ===
-orders = []; // array of maps: {recipe, timer, max_timer, reward}
+// each order: {recipe, timer, max_timer, reward, is_bonus}
+orders = [];
 max_orders = 4;
 order_spawn_timer = 0;
 order_spawn_rate = 240; // frames between spawns (4 sec at 60fps)
 
 // === ASSEMBLY BELT ===
 assembly = []; // current assembled colors
+assembly_slide = []; // x offset per item for slide-in animation
 max_assembly = 6;
 
 // === DIFFICULTY TABLE ===
@@ -49,6 +52,20 @@ diff_table = [
 
 // === FLOATING TEXT POPUPS ===
 popups = []; // {x, y, text, color, timer, max_timer}
+
+// === SCREEN EFFECTS ===
+shake_timer = 0;
+shake_intensity = 0;
+shake_x = 0;
+shake_y = 0;
+red_flash_timer = 0;
+red_flash_max = 20;
+
+// === STATION TAP FEEDBACK ===
+station_flash = [0, 0, 0, 0, 0]; // timer per station (max 5)
+
+// === WRONG SHIP FEEDBACK ===
+wrong_ship_timer = 0;
 
 // === LAYOUT (recalculated in Step_2) ===
 window_width = 0;
@@ -68,9 +85,10 @@ button_area_y = 0;
 
 // Station button rects: [{x1,y1,x2,y2,color_idx}]
 station_buttons = [];
-// Ship / Clear button rects
+// Ship / Clear / Undo button rects
 ship_btn = {x1: 0, y1: 0, x2: 0, y2: 0};
 clear_btn = {x1: 0, y1: 0, x2: 0, y2: 0};
+undo_btn = {x1: 0, y1: 0, x2: 0, y2: 0};
 
 // Conveyor animation
 conveyor_offset = 0;
@@ -93,9 +111,12 @@ api_load_state(function(_status, _ok, _result, _payload) {
         lives = _state.data.lives;
         orders_completed = _state.data.orders_completed;
         combo = _state.data.combo;
+        if (variable_struct_exists(_state.data, "best_score")) {
+            best_score = _state.data.best_score;
+        }
     }
     catch (_ex) {
-        api_save_state(0, { points: 0, level: 1, lives: 3, orders_completed: 0, combo: 1 }, undefined);
+        api_save_state(0, { points: 0, level: 1, lives: 3, orders_completed: 0, combo: 1, best_score: 0 }, undefined);
     }
     state_loaded = true;
     alarm[0] = 60 * 15; // save every 15 sec

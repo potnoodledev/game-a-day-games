@@ -26,12 +26,11 @@ if (layout_dirty) {
     layout_dirty = false;
 
     var _pad = max(8, _w * 0.03);
-    var _font_h = 16;
 
     // HUD area at top
     hud_h = max(50, _h * 0.08);
 
-    // Button area at bottom
+    // Button area at bottom — 3 buttons: UNDO, SHIP, CLEAR
     var _btn_h = max(50, _h * 0.07);
     button_area_y = _h - _btn_h - _pad;
 
@@ -67,15 +66,24 @@ if (layout_dirty) {
         _si += 1;
     }
 
-    // Ship and Clear buttons
-    var _btn_w = (_w - _pad * 3) * 0.5;
-    ship_btn.x1 = _pad;
+    // Three buttons: UNDO | SHIP | CLEAR
+    var _btn_gap = _pad * 0.5;
+    var _total_btn_w = _w - _pad * 2 - _btn_gap * 2;
+    var _side_btn_w = _total_btn_w * 0.25;
+    var _ship_btn_w = _total_btn_w * 0.5;
+
+    undo_btn.x1 = _pad;
+    undo_btn.y1 = button_area_y;
+    undo_btn.x2 = _pad + _side_btn_w;
+    undo_btn.y2 = button_area_y + _btn_h;
+
+    ship_btn.x1 = _pad + _side_btn_w + _btn_gap;
     ship_btn.y1 = button_area_y;
-    ship_btn.x2 = _pad + _btn_w;
+    ship_btn.x2 = _pad + _side_btn_w + _btn_gap + _ship_btn_w;
     ship_btn.y2 = button_area_y + _btn_h;
 
-    clear_btn.x1 = _pad * 2 + _btn_w;
+    clear_btn.x1 = _pad + _side_btn_w + _btn_gap + _ship_btn_w + _btn_gap;
     clear_btn.y1 = button_area_y;
-    clear_btn.x2 = _pad * 2 + _btn_w * 2;
+    clear_btn.x2 = _w - _pad;
     clear_btn.y2 = button_area_y + _btn_h;
 }
