@@ -20,8 +20,15 @@ Each folder is a complete GameMaker project for that day's game, built from scra
 | 10 | Gem Forge | Feb 17, 2026 | Balatro-style match-3 — swap gems, hit score targets, pick modifier cards between rounds |
 | 11 | Ricochet | Feb 18, 2026 | Drag-to-aim ball bouncer — hit all targets with 3 shots, combos, wall reflections, obstacles |
 | 12 | Game of Life | Feb 19, 2026 | Rogue-like Conway's Game of Life — place cells around walls and targets, pick power-ups between rounds |
+| 13 | Assembly Line | Feb 20, 2026 | Factory sim — tap stations to assemble color recipes, ship orders before they expire, build combos |
 
 ## Devlogs
+
+### Day 13: Assembly Line
+
+Factory sim order-filling game — coloured stations at the bottom, incoming orders with countdown timers at the top, conveyor belt in between. Tap stations to add parts, match an order's recipe, hit SHIP. Combo multiplier (1x→4x) rewards fast completions, quick completion bonus for shipping with >50% timer remaining. 5 difficulty levels: starts with 3 colours and 2-part recipes (15s timers), scales to 5 colours and 5-part recipes (8s timers). Every 5 orders advances the level.
+
+Layout is fully responsive — station buttons resize and redistribute when num_colors changes on level up. SHIP button glows green when assembly matches an order for instant visual feedback. Animated conveyor belt with scrolling hash marks. Zero sprites, all procedural circles and rectangles. Fixed: orders_for_next_level wasn't resetting on game restart, and layout wasn't recalculating when num_colors changed on level up.
 
 ### Day 12: Game of Life
 
