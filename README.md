@@ -26,9 +26,9 @@ Each folder is a complete GameMaker project for that day's game, built from scra
 
 ### Day 13: Assembly Line
 
-Factory sim order-filling game — coloured stations at the bottom, incoming orders with countdown timers at the top, conveyor belt in between. Tap stations to add parts, match an order's recipe, hit SHIP. Combo multiplier (1x→4x) rewards fast completions, quick completion bonus for shipping with >50% timer remaining. 5 difficulty levels: starts with 3 colours and 2-part recipes (15s timers), scales to 5 colours and 5-part recipes (8s timers). Every 5 orders advances the level.
+Factory sim order-filling game — coloured stations at the bottom, incoming orders with countdown timers at the top, conveyor belt in between. Tap stations to add parts, match an order's recipe, hit SHIP and watch cargo slide off the belt. Combo multiplier (1x→4x) rewards fast completions, quick completion bonus for shipping with >50% timer remaining. 5 difficulty levels: starts with 3 colours and 2-part recipes (15s timers), scales to 5 colours and 5-part recipes (8s timers). Every 5 orders advances the level AND offers a power-up choice.
 
-Layout is fully responsive — station buttons resize and redistribute when num_colors changes on level up. SHIP button glows green when assembly matches an order for instant visual feedback. Animated conveyor belt with scrolling hash marks. Zero sprites, all procedural circles and rectangles. Fixed: orders_for_next_level wasn't resetting on game restart, and layout wasn't recalculating when num_colors changed on level up.
+Four power-ups designed for emergent stacking: **OVERFLOW** (belt wraps — new items push oldest off, risky but enables flow), **FRENZY** (combo x3+ spawns bonus $50 orders with 5s timers — snowball moments), **EXTRA LIFE** (+1, max 5), **FREEZE** (pause all order timers for 5s). Ship-out animation slides completed orders right off the belt. Factory-style square station buttons with rivets, product names on orders, partial-match highlighting, new-color announcement with grace freeze on level up. Three modifier design passes — first attempt (wildcard/mirror/double-tap) was too powerful, reverted and redesigned for balanced stacking.
 
 ### Day 12: Game of Life
 

@@ -50,6 +50,24 @@ while (_li < lives) {
 }
 draw_text_ext_transformed(_pad, hud_h * 0.7, "LIVES: " + _heart_text, 0, _w, _hud_scale * 0.8, _hud_scale * 0.8, 0);
 
+// Active modifier badges
+if (overflow_active || frenzy_active) {
+    var _mod_x = _pad;
+    var _mod_y = hud_h * 0.92;
+    var _mod_scale = _hud_scale * 0.55;
+    draw_set_halign(fa_left);
+    draw_set_valign(fa_middle);
+    if (overflow_active) {
+        draw_set_colour($0fc4f1);
+        draw_text_ext_transformed(_mod_x, _mod_y, "[OVR]", 0, _w, _mod_scale, _mod_scale, 0);
+        _mod_x += 42 * _mod_scale;
+    }
+    if (frenzy_active) {
+        draw_set_colour($00d4ff);
+        draw_text_ext_transformed(_mod_x, _mod_y, "[FRZ]", 0, _w, _mod_scale, _mod_scale, 0);
+    }
+}
+
 // Combo + decay bar
 if (combo > combo_floor) {
     draw_set_halign(fa_right);
@@ -162,7 +180,7 @@ while (_oi < array_length(orders)) {
 
     // Compute match count from assembly start
     var _match_count = 0;
-    if (array_length(assembly) > 0 && array_length(assembly) <= array_length(_recipe)) {
+    if (array_length(assembly) > 0 && array_length(assembly) <= array_length(_recipe) && shipping_timer <= 0) {
         _match_count = array_length(assembly);
         var _ci = 0;
         while (_ci < array_length(assembly)) {
@@ -266,7 +284,11 @@ draw_set_valign(fa_top);
 draw_set_colour($999999);
 draw_text_ext_transformed(_pad + 4 + _sx, belt_area_y + 2 + _sy, "ASSEMBLY", 0, _w, _hud_scale * 0.45, _hud_scale * 0.45, 0);
 
-// Assembly items with slide-in + conveyor bob
+// Assembly items with slide-in + conveyor bob + ship-out animation
+var _ship_progress = 0;
+if (shipping_timer > 0) {
+    _ship_progress = 1.0 - (shipping_timer / 25.0);
+}
 var _belt_cy = belt_area_y + belt_area_h * 0.55 + _sy;
 var _belt_circle_r = min(belt_area_h * 0.3, _w * 0.045);
 var _belt_start_x = _pad + _belt_circle_r + 10 + _sx;
@@ -280,11 +302,20 @@ while (_ai < array_length(assembly)) {
     var _bob = sin((conveyor_offset + _ai * 5) * 0.3) * 1.5;
     var _ax = _belt_start_x + _ai * _belt_spacing;
     var _ay = _belt_cy + _slide_offset + _bob;
+
+    // Ship-out: accelerate right + fade
+    if (_ship_progress > 0) {
+        _ax += _ship_progress * _ship_progress * (_w * 0.8);
+        draw_set_alpha(1.0 - _ship_progress);
+    }
+
     var _col_idx = assembly[_ai];
     draw_set_colour(all_colors[_col_idx]);
     draw_circle(_ax, _ay, _belt_circle_r, false);
     draw_set_colour($ffffff);
     draw_circle(_ax, _ay, _belt_circle_r, true);
+
+    draw_set_alpha(1.0);
     _ai += 1;
 }
 while (_ai < max_assembly) {
@@ -325,6 +356,15 @@ while (_si < array_length(station_buttons)) {
 
     var _dw = _bw * _flash_scale;
     var _dh = _bh * _flash_scale;
+
+    // New color pulsing highlight
+    if (new_color_timer > 0 && _btn.color_idx == new_color_idx) {
+        var _nc_pulse = 0.3 + sin(current_time * 0.008) * 0.2;
+        draw_set_alpha(_nc_pulse);
+        draw_set_colour(all_colors[_btn.color_idx]);
+        draw_rectangle(_cx - _dw - 10, _cy - _dh - 10, _cx + _dw + 10, _cy + _dh + 10, false);
+        draw_set_alpha(1.0);
+    }
 
     // Flash glow
     if (_flash > 0) {
@@ -378,7 +418,7 @@ draw_text_ext_transformed(_undo_cx, _undo_cy, "UNDO", 0, _w, _hud_scale * 0.8, _
 
 // Ship — match check
 var _has_match = false;
-if (array_length(assembly) > 0) {
+if (array_length(assembly) > 0 && shipping_timer <= 0) {
     var _ci = 0;
     while (_ci < array_length(orders)) {
         var _recipe = orders[_ci].recipe;
@@ -456,6 +496,26 @@ if (freeze_timer > 0) {
     draw_set_alpha(0.08);
     draw_set_colour($ffcc88);
     draw_rectangle(_pad * 0.5, order_area_y - 4, _w - _pad * 0.5, order_area_y + order_area_h + 4, false);
+    draw_set_alpha(1.0);
+}
+
+// === NEW COLOR ANNOUNCEMENT ===
+if (new_color_timer > 0 && new_color_idx >= 0) {
+    var _nc_alpha = min(1.0, new_color_timer / 30.0);
+    draw_set_alpha(_nc_alpha);
+    // Dark banner background
+    draw_set_colour($000000);
+    var _banner_h = _hud_scale * 36;
+    var _banner_y = _h * 0.42 - _banner_h * 0.5;
+    draw_set_alpha(_nc_alpha * 0.7);
+    draw_rectangle(0, _banner_y, _w, _banner_y + _banner_h, false);
+    draw_set_alpha(_nc_alpha);
+
+    draw_set_halign(fa_center);
+    draw_set_valign(fa_middle);
+    draw_set_colour(all_colors[new_color_idx]);
+    var _nc_scale = _hud_scale * 1.6 + sin(current_time * 0.006) * _hud_scale * 0.15;
+    draw_text_ext_transformed(_w * 0.5, _banner_y + _banner_h * 0.5, "NEW COLOR: " + color_names[new_color_idx] + "!", 0, _w, _nc_scale, _nc_scale, 0);
     draw_set_alpha(1.0);
 }
 

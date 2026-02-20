@@ -82,23 +82,35 @@ station_flash = [0, 0, 0, 0, 0];
 wrong_ship_timer = 0;
 belt_full_timer = 0;
 
-// === FREEZE POWER-UP ===
+// === FREEZE (grace period only, not a power-up) ===
 freeze_timer = 0;
+
+// === NEW COLOR ANNOUNCEMENT ===
+new_color_timer = 0;
+new_color_idx = -1; // index of newly added color
+
+// === SHIPPING ANIMATION ===
+shipping_timer = 0;
+shipping_order = undefined;
+
+// === GAMEPLAY MODIFIERS ===
+overflow_active = false;
+frenzy_active = false;
 
 // === POWER-UP SELECTION ===
 powerup_state = 0; // 0=inactive, 1=choosing
 powerup_choices = [0, 1];
-powerup_names = ["FREEZE", "EXTRA LIFE", "COMBO LOCK", "TIME WARP"];
+powerup_names = ["OVERFLOW", "EXTRA LIFE", "FRENZY", "FREEZE"];
 powerup_descs = [];
-array_push(powerup_descs, "Pause all order timers for 5s");
+array_push(powerup_descs, "Full belt? New items push old ones off");
 array_push(powerup_descs, "+1 life (max 5)");
-array_push(powerup_descs, "Combo stays at 2x minimum");
-array_push(powerup_descs, "+50% time on all orders");
+array_push(powerup_descs, "Combo x3 spawns bonus orders on ship");
+array_push(powerup_descs, "Pause all order timers for 5s");
 powerup_colors = [];
-array_push(powerup_colors, $db9834);
-array_push(powerup_colors, $3c4ce7);
-array_push(powerup_colors, $71cc2e);
 array_push(powerup_colors, $0fc4f1);
+array_push(powerup_colors, $3c4ce7);
+array_push(powerup_colors, $00d4ff);
+array_push(powerup_colors, $db9834);
 
 // === TUTORIAL ===
 tutorial_done = false;
@@ -140,16 +152,19 @@ api_load_state(function(_status, _ok, _result, _payload) {
     try {
         var _state = json_parse(_result);
         username = _state.username;
-        level = _state.data.level;
-        points = _state.data.points;
-        lives = _state.data.lives;
-        orders_completed = _state.data.orders_completed;
-        combo = _state.data.combo;
         if (variable_struct_exists(_state.data, "best_score")) {
             best_score = _state.data.best_score;
         }
         if (variable_struct_exists(_state.data, "tutorial_done")) {
             tutorial_done = _state.data.tutorial_done;
+        }
+        // Only restore mid-run state if player was alive
+        if (_state.data.lives > 0) {
+            level = _state.data.level;
+            points = _state.data.points;
+            lives = _state.data.lives;
+            orders_completed = _state.data.orders_completed;
+            combo = _state.data.combo;
         }
     }
     catch (_ex) {
