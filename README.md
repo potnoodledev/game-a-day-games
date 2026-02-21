@@ -21,8 +21,15 @@ Each folder is a complete GameMaker project for that day's game, built from scra
 | 11 | Ricochet | Feb 18, 2026 | Drag-to-aim ball bouncer — hit all targets with 3 shots, combos, wall reflections, obstacles |
 | 12 | Game of Life | Feb 19, 2026 | Rogue-like Conway's Game of Life — place cells around walls and targets, pick power-ups between rounds |
 | 13 | Assembly Line | Feb 20, 2026 | Factory sim — tap stations to assemble color recipes, ship orders before they expire, build combos |
+| 14 | Hot Take | Feb 21, 2026 | Reddit simulator — post across 10 subreddits, match post types to community preferences, farm karma |
 
 ## Devlogs
+
+### Day 14: Hot Take
+
+Reddit simulator — you're a karma-farming redditor posting across 10 subreddits (r/AskReddit, r/aww, r/gaming, r/science, r/mildlyinteresting, r/todayilearned, r/unpopularopinion, r/showerthoughts, r/tifu, r/nostalgia). Each sub has a hidden 5-point preference matrix for 8 post types: Wholesome Story, Hot Take, Dank Meme, OC Deep Dive, Shitpost, Repost Classic, Genuine Question, Angry Rant. Good matches (4-5) earn massive karma and reputation; bad matches (1-2) cost reputation. Zero reputation = account suspended.
+
+Full Reddit dark mode UI: #1a1a1a background, upvote/downvote triangles, subreddit headers with colored icon circles, post cards with vote columns and comment counts, floating vote arrows during reaction phase, comment bubbles with flavor text ("This is the way", "Ratio", etc.), Silver/Gold/Platinum award badges. Results overlay shows karma earned, upvotes, comments, awards, reputation change. Noto Sans Bold font. Unlocking new subreddits every 5 posts, choice timer after 10 posts, streak multiplier at 3+. Array-literal-with-hex GML compile bug required refactoring to if/else chains.
 
 ### Day 13: Assembly Line
 
