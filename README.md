@@ -22,8 +22,15 @@ Each folder is a complete GameMaker project for that day's game, built from scra
 | 12 | Game of Life | Feb 19, 2026 | Rogue-like Conway's Game of Life — place cells around walls and targets, pick power-ups between rounds |
 | 13 | Assembly Line | Feb 20, 2026 | Factory sim — tap stations to assemble color recipes, ship orders before they expire, build combos |
 | 14 | Hot Take | Feb 21, 2026 | Reddit simulator — post across 10 subreddits, match post types to community preferences, farm karma |
+| 15 | Auto Chess | Feb 22, 2026 | Auto-battler — buy, merge, and position 6 unit types with tag synergies, fight exponentially scaling waves |
 
 ## Devlogs
+
+### Day 15: Auto Chess
+
+Auto-battler on a 6x4 grid with 6 unit types (Warrior, Knight, Archer, Mage, Rogue, Healer), 5 tag-based synergies (Frontline, Ranged, Mystic, Armored, Assassin), and a 3-to-merge star-up system. Enemy waves spawn during shop phase as a preview so players can draft tactically. Lose one battle = game over. Exponential wave scaling (1.15^round) with random star upgrades and boss rounds every 5.
+
+Animation system with smooth grid-cell lerping, melee lunge attacks, ranged projectiles (colored orbs with white cores and trails), and death animations (shrink + expanding ring). Merge implementation uses struct references instead of array indices to survive array mutations. Key HTML5 fix: wrapping API callbacks with `method(self, ...)` to prevent closure hoisting from losing instance context.
 
 ### Day 14: Hot Take
 
