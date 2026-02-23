@@ -23,8 +23,15 @@ Each folder is a complete GameMaker project for that day's game, built from scra
 | 13 | Assembly Line | Feb 20, 2026 | Factory sim — tap stations to assemble color recipes, ship orders before they expire, build combos |
 | 14 | Hot Take | Feb 21, 2026 | Reddit simulator — post across 10 subreddits, match post types to community preferences, farm karma |
 | 15 | Auto Chess | Feb 22, 2026 | Auto-battler — buy, merge, and position 6 unit types with tag synergies, fight exponentially scaling waves |
+| 16 | Balancing Act | Feb 23, 2026 | Physics puzzle — place weighted shapes on a seesaw, survive 3-second hold phases, progressive waves with wind |
 
 ## Devlogs
+
+### Day 16: Balancing Act
+
+Torque-based physics puzzle — place weighted shapes (Box, Plank, Column, Ball, Anvil) on a pivoting beam, keeping it balanced. Five object types with different weights and slide behaviours: Balls slide 2x faster, Anvils are heavy but compact. Wave system: each wave gives a fixed set of shapes, then a 3-second hold phase where physics keeps running. Tip the beam at any point = game over. Waves progressively unlock new types, add weight variance, and introduce wind gusts (wave 5+).
+
+Physics model: net torque = Σ(weight × offset) drives angular acceleration with damping. Objects slide along the tilted beam proportional to sin(angle)/weight, with 1D collision resolution preventing overlap and creating domino chain reactions. Side panels show left/right weight and torque totals. Tilt gauge with green→red arc behind fulcrum. Critical HTML5 bug: struct field access returns undefined instead of throwing — `variable_struct_exists` required for safe state loading.
 
 ### Day 15: Auto Chess
 
