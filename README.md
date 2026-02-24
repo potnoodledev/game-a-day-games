@@ -24,8 +24,15 @@ Each folder is a complete GameMaker project for that day's game, built from scra
 | 14 | Hot Take | Feb 21, 2026 | Reddit simulator — post across 10 subreddits, match post types to community preferences, farm karma |
 | 15 | Auto Chess | Feb 22, 2026 | Auto-battler — buy, merge, and position 6 unit types with tag synergies, fight exponentially scaling waves |
 | 16 | Balancing Act | Feb 23, 2026 | Physics puzzle — place weighted shapes on a seesaw, survive 3-second hold phases, progressive waves with wind |
+| 17 | Orbital | Feb 24, 2026 | Gravity slingshot puzzle — place gravity wells to bend a comet's trajectory through star gates |
 
 ## Devlogs
+
+### Day 17: Orbital
+
+Gravity slingshot puzzle — a comet launches from the left and players tap to place gravity wells (planets) that bend its trajectory through star gates. 1/r gravity falloff (not inverse-square) for more game-friendly physics — wider planet influence, survivable close passes. Wave system: 1.5-second pre-launch planning phase with real-time trajectory preview (80-step forward simulation), then active flight where planets can still be placed. Gates collected = score (100 × wave), all cleared = 500 × wave bonus. Off-screen with 0 gates after wave 1 = game over. Hit a planet = crash.
+
+Trajectory preview was the key feature — dotted line showing predicted comet path updates live as planets are placed, turning a reflex game into a planning puzzle. Speed cap (10 px/frame) prevents runaway acceleration. Wave difficulty scales via comet speed (2.0 + wave × 0.2), gate count (2 + wave, max 10), and fewer planets available at higher waves. Particle system with compaction for gate collection bursts and death explosions. Wave transitions use a boolean flag checked at Step_0 top to avoid closure issues on HTML5. ~608 lines, zero sprites.
 
 ### Day 16: Balancing Act
 
