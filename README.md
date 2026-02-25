@@ -25,8 +25,13 @@ Each folder is a complete GameMaker project for that day's game, built from scra
 | 15 | Auto Chess | Feb 22, 2026 | Auto-battler — buy, merge, and position 6 unit types with tag synergies, fight exponentially scaling waves |
 | 16 | Balancing Act | Feb 23, 2026 | Physics puzzle — place weighted shapes on a seesaw, survive 3-second hold phases, progressive waves with wind |
 | 17 | Orbital | Feb 24, 2026 | Gravity slingshot puzzle — place gravity wells to bend a comet's trajectory through star gates |
+| 18 | Voxel Miner | Feb 25, 2026 | Dig-down mine crawler — 6 ore types, cave-ins, stalactite crusher, combo scoring, death animation |
 
 ## Devlogs
+
+### Day 18: Voxel Miner
+
+Dig-down mine crawler on a 10×80 grid — 6 ore types (Dirt→Stone→Coal→Iron→Gold→Diamond) with depth-stratified generation, durability, and combo multipliers. Cave-in timer collapses the grid every 12 seconds, blocks fall until settled, player crushed = death. Stalactite crusher descends from the top at 0.008 rows/frame (base), speeds up 1.3× after each cave-in — blocks shatter with colored debris particles on contact. Collision offset bug required 3 iterations to fix: visual tips at stalactite_y+1.7, crush/death checks needed same offset. Proximity-based ambient rumble scales 0→1.5 within 10 rows. Death animation: hat/pickaxe fly off with physics, stars spiral, cute ghost with X-eyes rises and fades. Fog of war reveals blocks within 2 cells of empty space. ~12 build iterations, ~150-200k tokens.
 
 ### Day 17: Orbital
 
