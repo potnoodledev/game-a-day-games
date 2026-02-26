@@ -26,8 +26,13 @@ Each folder is a complete GameMaker project for that day's game, built from scra
 | 16 | Balancing Act | Feb 23, 2026 | Physics puzzle — place weighted shapes on a seesaw, survive 3-second hold phases, progressive waves with wind |
 | 17 | Orbital | Feb 24, 2026 | Gravity slingshot puzzle — place gravity wells to bend a comet's trajectory through star gates |
 | 18 | Voxel Miner | Feb 25, 2026 | Dig-down mine crawler — 6 ore types, cave-ins, stalactite crusher, combo scoring, death animation |
+| 19 | Tiny Town | Feb 26, 2026 | Kairosoft-style micro city builder — combo zones, star rating, 5 years in 3 minutes |
 
 ## Devlogs
+
+### Day 19: Tiny Town
+
+Kairosoft-style micro city builder on a 5×6 grid — 4 building types (House, Shop, Park, Tower), visitor system, income ticks, 5-year timer (3 min total). Combo zone system: adjacent building pairs form named zones (Market, Plaza, Biz Dist, Suburb, Reserve) with income multipliers. Bitmask flag implementation so tiles can be in multiple zones simultaneously — each combo adds +0.5x additively. Star rating (0-5) based on buildings + upgrades + combos, with milestone rewards (coin bonuses, Tower unlock at 2 stars, global income multipliers at 3 and 5 stars). Random events every 30s: Boom (10x one building), Storm (disable one), VIP visitors (gold, 5x coins). Key HTML5 discoveries: `event_type` is a reserved read-only variable, string comparison silently fails in compiled JS (use integer constants), `draw_text_ext_transformed` doesn't render at small scales (use `draw_text_transformed` instead). ~9 iterations, ~200k tokens.
 
 ### Day 18: Voxel Miner
 
