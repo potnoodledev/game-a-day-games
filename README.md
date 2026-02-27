@@ -27,8 +27,13 @@ Each folder is a complete GameMaker project for that day's game, built from scra
 | 17 | Orbital | Feb 24, 2026 | Gravity slingshot puzzle — place gravity wells to bend a comet's trajectory through star gates |
 | 18 | Voxel Miner | Feb 25, 2026 | Dig-down mine crawler — 6 ore types, cave-ins, stalactite crusher, combo scoring, death animation |
 | 19 | Tiny Town | Feb 26, 2026 | Kairosoft-style micro city builder — combo zones, star rating, 5 years in 3 minutes |
+| 20 | First Person Tower Defense | Feb 27, 2026 | Pseudo-3D corridor TD — tap enemies, place wall towers, 3 enemy types, wave scaling |
 
 ## Devlogs
+
+### Day 20: First Person Tower Defense
+
+Pseudo-3D corridor tower defense — vanishing point perspective rendered entirely with GML primitives. Enemies spawn at depth 0 (far) and advance to depth 1 (near), scaling from 10% to 100% size. 3 enemy types: Basic (red circles), Fast (orange diamonds, 2x speed), Tank (purple rectangles, high HP). 6 tower slots on corridor walls at 3 depth levels, auto-fire at nearest enemy in range, upgradeable (damage, fire rate, range). Tap enemies directly for 2 damage with cooldown. Wave system: 4 + wave×2 enemies, spawn interval shrinks, fast enemies from wave 3, tanks from wave 5. Key bug: tap detection and rendering used different perspective formulas — unified both to same lerp math with matching offsets. ~4 iterations, ~80k tokens.
 
 ### Day 19: Tiny Town
 
