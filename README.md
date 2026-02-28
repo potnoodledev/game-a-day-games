@@ -28,8 +28,15 @@ Each folder is a complete GameMaker project for that day's game, built from scra
 | 18 | Voxel Miner | Feb 25, 2026 | Dig-down mine crawler — 6 ore types, cave-ins, stalactite crusher, combo scoring, death animation |
 | 19 | Tiny Town | Feb 26, 2026 | Kairosoft-style micro city builder — combo zones, star rating, 5 years in 3 minutes |
 | 20 | First Person Tower Defense | Feb 27, 2026 | Pseudo-3D corridor TD — tap enemies, place wall towers, 3 enemy types, wave scaling |
+| 21 | Hearthstone Chess | Feb 28, 2026 | Card/mana chess hybrid — 5 piece types with keywords, spells, hero power, AI opponent |
 
 ## Devlogs
+
+### Day 21: Hearthstone Chess
+
+Hearthstone meets chess on a 5×6 grid — 5 piece types (Pawn, Knight, Bishop, Rook, King) each with ATK/HP stats and Hearthstone keywords (Taunt, Battlecry, Deathrattle). Card hand drawn from a 16-card deck, mana grows +1/turn (cap 7), 4 spell types (Fireball, Heal, Shield, Rage), Hero Power (2 mana, 1 dmg). Summon minions on back 2 rows only, summoning sickness prevents immediate action. AI uses priority-based decisions: kill King > kill threats > favorable trades > summon > cast spells > hero power > advance.
+
+UI went through 5 iterations: moved buttons out of card overlap zone, added 3-line context panel (name+stats, movement/keyword description, action hint), mana as crystal icons, End Turn pulse when no actions remain, cards selectable without mana for info display, "Not enough mana!" notification on invalid board taps. Each piece type has a distinct procedural silhouette. Animations: slide movement, combat lunge, elastic summon scale-up with white flash, damage particles. Created `deploy-ghpages.sh` for single-command GitHub Pages deployment. ~15 iterations, ~300k tokens.
 
 ### Day 20: First Person Tower Defense
 
