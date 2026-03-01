@@ -29,8 +29,13 @@ Each folder is a complete GameMaker project for that day's game, built from scra
 | 19 | Tiny Town | Feb 26, 2026 | Kairosoft-style micro city builder — combo zones, star rating, 5 years in 3 minutes |
 | 20 | First Person Tower Defense | Feb 27, 2026 | Pseudo-3D corridor TD — tap enemies, place wall towers, 3 enemy types, wave scaling |
 | 21 | Hearthstone Chess | Feb 28, 2026 | Card/mana chess hybrid — 5 piece types with keywords, spells, hero power, AI opponent |
+| 22 | Slime Knight | Mar 1, 2026 | Pac-Man reimagined — knight in procedural mazes, slime ghosts, power-ups, roguelike upgrades |
 
 ## Devlogs
+
+### Day 22: Slime Knight
+
+Pac-Man reimagined as a medieval dungeon crawl — knight with sword navigates procedurally generated 11×15 mazes, dodging 4 slime ghost types with classic AI behaviours (chase, ambush, flank, shy). Power pellets frighten ghosts (escalating eat combos 200→1600), speed boosts, freeze orbs, and a magnet upgrade. Roguelike upgrade selection between rounds: speed+, longer fright, ghost slow, magnet range, extra life, wall phase. Changed round clear from 100% to 75% dots with a green progress bar — hunting the last few dots was tedious, the fun is in the collection rush. Recursive backtracker maze gen with 15 extra wall-breaking passes for open layouts. Ghost pen with orbiting particles and spawn animations. Zero sprites — procedural knight (helmet/visor/armor/sword) and slime blobs (bob/drip/highlight/directional eyes). ~8 iterations, ~100k tokens.
 
 ### Day 21: Hearthstone Chess
 
