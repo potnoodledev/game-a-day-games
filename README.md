@@ -30,8 +30,13 @@ Each folder is a complete GameMaker project for that day's game, built from scra
 | 20 | First Person Tower Defense | Feb 27, 2026 | Pseudo-3D corridor TD — tap enemies, place wall towers, 3 enemy types, wave scaling |
 | 21 | Hearthstone Chess | Feb 28, 2026 | Card/mana chess hybrid — 5 piece types with keywords, spells, hero power, AI opponent |
 | 22 | Slime Knight | Mar 1, 2026 | Pac-Man reimagined — knight in procedural mazes, slime ghosts, power-ups, roguelike upgrades |
+| 23 | Crowd Runner | Mar 3, 2026 | Mobile ad parody crowd runner — pick gates (+N, ×N), grow army, smash boss horde |
 
 ## Devlogs
+
+### Day 23: Crowd Runner
+
+Mobile ad parody that's actually a real game — crowd runner where you swipe to pick gates (+N, -N, ×N, ÷N) and grow your army to beat a boss horde. Garish fake-ad UI: pulsing "DOWNLOAD NOW!!!" button, fake 5-star rating, "RATE 5 STARS TO CONTINUE!" game over screen, tiny fake X button, "Skip Ad >>" text, "BUY EXTRA LIVES $4.99". Gate generation simulates optimal path then sets enemy to 60-85% of max, ensuring solvability. Persistent swipe input with tap-on-side fallback. Cycling neon gradient background, army blob particles, VS battle animation. Difficulty scales gate count (6→12), enemy size (35→300+), and gate mix (mostly +N → ×/÷ traps). ~4 iterations, ~80k tokens.
 
 ### Day 22: Slime Knight
 
