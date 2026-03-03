@@ -31,8 +31,13 @@ Each folder is a complete GameMaker project for that day's game, built from scra
 | 21 | Hearthstone Chess | Feb 28, 2026 | Card/mana chess hybrid — 5 piece types with keywords, spells, hero power, AI opponent |
 | 22 | Slime Knight | Mar 1, 2026 | Pac-Man reimagined — knight in procedural mazes, slime ghosts, power-ups, roguelike upgrades |
 | 23 | Crowd Runner | Mar 3, 2026 | Mobile ad parody crowd runner — pick gates (+N, ×N), grow army, smash boss horde |
+| 24 | Spot the Impostor | Mar 3, 2026 | Among Us observation game — watch crewmate AI, spot fake tasks/vent lingering, tap to accuse |
 
 ## Devlogs
+
+### Day 24: Spot the Impostor
+
+Among Us distilled into single-player observation — top-down spaceship with 5 rooms (Cafeteria, Electrical, Medbay, Navigation, Security) connected by corridors. Crewmate AI runs state machines: idle→walking→tasking with randomized timers. Impostor has additional states: faking (partial progress bar fill), venting (red glow near grey grate), stalking (follows at 1.2× speed), killing (target vanishes with red flash). Three observable tells scale with difficulty: early rounds have obvious vent pauses and 30% task bar fill, later rounds have brief visits and 90% fill. Bean-shaped crewmates with backpack bumps and visor highlights, all procedural. Emergency meeting flash on accusation, ejection animation for correct guesses, impostor reveal for wrong ones. Scoring: base × round + time bonus + streak multiplier. ~4 iterations, ~60k tokens.
 
 ### Day 23: Crowd Runner
 
