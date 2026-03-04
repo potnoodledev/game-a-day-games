@@ -32,8 +32,13 @@ Each folder is a complete GameMaker project for that day's game, built from scra
 | 22 | Slime Knight | Mar 1, 2026 | Pac-Man reimagined — knight in procedural mazes, slime ghosts, power-ups, roguelike upgrades |
 | 23 | Crowd Runner | Mar 3, 2026 | Mobile ad parody crowd runner — pick gates (+N, ×N), grow army, smash boss horde |
 | 24 | Spot the Impostor | Mar 3, 2026 | Among Us observation game — watch crewmate AI, spot fake tasks/vent lingering, tap to accuse |
+| 25 | Final Fantasy Tactics | Mar 4, 2026 | Isometric tactical RPG — CT turn system, 3 player classes, height bonus/backstab, enemy waves |
 
 ## Devlogs
+
+### Day 25: Final Fantasy Tactics
+
+Isometric tactical RPG on a 7×7 grid with predefined height levels (0-2). CT (charge time) turn system: each unit ticks CT by speed each frame, first to 100 acts. 3 player classes (Knight, BlackMage, Archer) vs Goblin/EnemyArcher waves. Height advantage: +1 damage from above, Archers get +2. Backstab: +1 from behind based on facing direction. BlackMage spells have 60-frame charge delay. Tap-to-grid via brute-force diamond containment test on all tiles. Enemy AI pathfinds toward nearest player, archers weight high ground. Defeated enemies drop healing crystals. FFT-style dark blue UI panels, CT order bar, action menu, unit info. Back-to-front isometric draw order with side faces for elevated tiles. Zero sprites — all procedural. ~4 iterations, ~80k tokens.
 
 ### Day 24: Spot the Impostor
 
