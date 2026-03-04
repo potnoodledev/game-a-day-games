@@ -4,7 +4,7 @@ level = 0;
 points = 0;
 prev_points = 0;
 
-game_state = 0; // 0=loading, 1=title, 2=playing, 3=animating, 4=wave_clear, 5=game_over
+game_state = 0; // 0=loading, 1=title, 2=playing, 3=animating, 4=wave_clear, 5=game_over, 6=level_up
 
 // --- Grid ---
 grid_w = 7;
@@ -26,7 +26,7 @@ for (var _i = 0; _i < grid_w * grid_h; _i++) {
 }
 
 // --- Units ---
-max_units = 12;
+max_units = 20;
 unit_count = 0;
 
 for (var _i = 0; _i < max_units; _i++) {
@@ -106,15 +106,47 @@ for (var _i = 0; _i < 16; _i++) {
 wave_num = 1;
 wave_clear_timer = 0;
 
+// --- Level-up system ---
+levelup_unit = -1;       // which player unit to upgrade (-1 = picking)
+levelup_phase = 0;       // 0 = pick unit, 1 = pick upgrade
+levelup_opt0 = 0;        // upgrade option IDs (3 options)
+levelup_opt1 = 0;
+levelup_opt2 = 0;
+levelup_selected = -1;   // tapped option index (-1 = none selected)
+
+// Upgrade names
+upgrade_name[0] = "+2 Max HP";
+upgrade_name[1] = "+1 ATK";
+upgrade_name[2] = "+1 DEF";
+upgrade_name[3] = "+1 MOV";
+upgrade_name[4] = "+1 RNG";
+upgrade_name[5] = "+1 SPD";
+upgrade_name[6] = "Full Heal";
+upgrade_name[7] = "+1 ATK&SPD";
+upgrade_name[8] = "+1 DEF&HP";
+
+// Upgrade descriptions
+upgrade_desc[0] = "Increase max HP by 2 and heal 2";
+upgrade_desc[1] = "Increase attack power by 1";
+upgrade_desc[2] = "Increase defense by 1";
+upgrade_desc[3] = "Increase move range by 1";
+upgrade_desc[4] = "Increase attack range by 1";
+upgrade_desc[5] = "Increase speed by 1";
+upgrade_desc[6] = "Restore HP to maximum";
+upgrade_desc[7] = "Boost attack and speed by 1";
+upgrade_desc[8] = "Boost defense by 1 and max HP by 2";
+
 // --- Animation ---
 camera_shake = 0;
 anim_timer = 0;
+anim_timer_max = 1;
 anim_type = 0; // 0=none, 1=move, 2=attack
 anim_unit = -1;
 anim_start_gx = 0;
 anim_start_gy = 0;
 anim_end_gx = 0;
 anim_end_gy = 0;
+anim_attack_target = -1;
 
 // --- UI ---
 selected_tile_gx = -1;
@@ -150,6 +182,12 @@ col_enemy_archer = make_colour_rgb(200, 60, 60);
 // Window
 window_width = 0;
 window_height = 0;
+
+// Debug
+debug_tap_gx = -1;
+debug_tap_gy = -1;
+debug_tap_mx = 0;
+debug_tap_my = 0;
 
 // --- Spawn player units ---
 // Knight at (1,5)
@@ -187,17 +225,25 @@ unit_acted[4] = false; unit_moved[4] = false;
 
 unit_count = 5;
 
+game_state = 1;
+alarm[0] = 60;
+
 api_load_state(function(_status, _ok, _result, _payload) {
     try {
         var _state = json_parse(_result);
-        other.username = _state.username;
-        other.level = _state.level;
-        other.points = _state.data.points;
-        other.wave_num = _state.data.wave_num;
+        if (variable_struct_exists(_state, "username")) {
+            other.username = _state.username;
+        }
+        if (variable_struct_exists(_state, "data") && is_struct(_state.data)) {
+            if (variable_struct_exists(_state.data, "points")) {
+                other.points = _state.data.points;
+            }
+            if (variable_struct_exists(_state.data, "wave_num")) {
+                other.wave_num = _state.data.wave_num;
+            }
+        }
     }
     catch (_ex) {
-        api_save_state(0, { points: other.points }, undefined);
+        // First load — no saved state, that's fine
     }
-    other.game_state = 1;
-    other.alarm[0] = 60;
 });
