@@ -33,8 +33,13 @@ Each folder is a complete GameMaker project for that day's game, built from scra
 | 23 | Crowd Runner | Mar 3, 2026 | Mobile ad parody crowd runner — pick gates (+N, ×N), grow army, smash boss horde |
 | 24 | Spot the Impostor | Mar 3, 2026 | Among Us observation game — watch crewmate AI, spot fake tasks/vent lingering, tap to accuse |
 | 25 | Final Fantasy Tactics | Mar 4, 2026 | Isometric tactical RPG — CT turn system, 3 classes, height/backstab, wave recipes, roguelike level-ups |
+| 29 | Starmaking | Mar 11, 2026 | Cosmic sandbox — tap to place stars, gravity-based planet orbits, supernovas scatter rogues, fight The Void |
 
 ## Devlogs
+
+### Day 29: Starmaking
+
+Cosmic sandbox/survival — tap to place star seeds that pull in dust, grow, procedurally form orbiting planets via real gravity simulation (F=G*M/r²), then supernova. Supernovas scatter dust + fling planets outward as "rogues" that drift and passively collect. The Void — a black border — creeps inward relentlessly. Stars slow it, supernovas push back slightly, but it accelerates until inevitable. 5 design pivots in one session: basic collection → stabilize/supernova choice → gravity orbits → fully procedural lifecycle → The Void. Big Bang opening with 200 particles from center. 12 procedural nebulae background. Gravity tuning: initial `G=800` with timestep mismatch launched planets into orbit — fixed with `G=12`, distance softening, speed clamping. Zero sprites. ~12 iterations, ~200k tokens.
 
 ### Day 25: Final Fantasy Tactics
 
