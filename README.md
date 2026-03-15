@@ -34,8 +34,13 @@ Each folder is a complete GameMaker project for that day's game, built from scra
 | 24 | Spot the Impostor | Mar 3, 2026 | Among Us observation game — watch crewmate AI, spot fake tasks/vent lingering, tap to accuse |
 | 25 | Final Fantasy Tactics | Mar 4, 2026 | Isometric tactical RPG — CT turn system, 3 classes, height/backstab, wave recipes, roguelike level-ups |
 | 29 | Starmaking | Mar 11, 2026 | Cosmic sandbox — tap to place stars, gravity-based planet orbits, supernovas scatter rogues, fight The Void |
+| 33 | Murmuration | Mar 15, 2026 | Guide a boids flock by touch, dodge momentum-based hawks, survive 60 seconds |
 
 ## Devlogs
+
+### Day 33: Murmuration
+
+Boids flocking survival — touch to attract birds, dodge hawks that use momentum-based physics (fast in straight lines, bleed speed on turns). 60-second timer with accelerating difficulty: hawk spawn rate drops from 5s to 0.75s, global speed ramp adds +4 over the game. Hawks never die, get faster with each kill, and wrap screen edges. Kill effect: red flash + feather burst. Birds pushed off-screen by hawk chaos count as lost. Dusk sky gradient with twinkling stars, V-shaped bird/hawk rendering, touch ripple feedback. The counterplay is sharp direction changes — bait a hawk dive, juke sideways, sweep flock away while it overshoots. ~5 iterations, ~120k tokens.
 
 ### Day 29: Starmaking
 
