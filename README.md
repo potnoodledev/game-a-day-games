@@ -35,8 +35,13 @@ Each folder is a complete GameMaker project for that day's game, built from scra
 | 25 | Final Fantasy Tactics | Mar 4, 2026 | Isometric tactical RPG — CT turn system, 3 classes, height/backstab, wave recipes, roguelike level-ups |
 | 29 | Starmaking | Mar 11, 2026 | Cosmic sandbox — tap to place stars, gravity-based planet orbits, supernovas scatter rogues, fight The Void |
 | 33 | Murmuration | Mar 15, 2026 | Guide a boids flock by touch, dodge momentum-based hawks, survive 60 seconds |
+| 34 | Fault Line | Mar 16, 2026 | City builder on a seismic fault — risk/reward placement, brace during quakes, aftershocks, cumulative income |
 
 ## Devlogs
+
+### Day 34: Fault Line
+
+City builder on a 7x5 grid straddling a seismic fault. Buildings near the fault earn 2-3x income but take more quake damage. Cumulative scoring: population generates points per second, so every moment of downtime after a quake bleeds score. Three mechanics that made it click: fault proximity multipliers (transparent risk/reward), aftershocks (1-3 smaller quakes follow big ones, preventing instant rebuild), and income-over-time scoring (urgency to repair). Brace one building during quakes for 75% damage reduction, warnings show quake direction. Upgrade path: House→Apt→Tower with green pulsing arrows on upgrade-ready buildings. ~4 iterations, ~100k tokens.
 
 ### Day 33: Murmuration
 
