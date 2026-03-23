@@ -36,8 +36,13 @@ Each folder is a complete GameMaker project for that day's game, built from scra
 | 29 | Starmaking | Mar 11, 2026 | Cosmic sandbox — tap to place stars, gravity-based planet orbits, supernovas scatter rogues, fight The Void |
 | 33 | Murmuration | Mar 15, 2026 | Guide a boids flock by touch, dodge momentum-based hawks, survive 60 seconds |
 | 34 | Fault Line | Mar 16, 2026 | City builder on a seismic fault — risk/reward placement, brace during quakes, aftershocks, cumulative income |
+| 39 | Word Chain | Mar 23, 2026 | Drag-to-spell word game — 6x6 letter grid, 97k-word dictionary, cascade animations, combo chains, 90-second timer |
 
 ## Devlogs
+
+### Day 39: Word Chain
+
+First word game in 39 days — drag across adjacent letters (including diagonals) to spell words on a 6x6 grid. Valid words flash green, disappear, remaining letters cascade down with lerp animations, new letters drop in from above. 97,109-word dictionary (3-7 letters) loaded via ds_map for O(1) lookup. Center-distance touch detection makes diagonal selection much easier than strict grid-cell bounds. Chain combo multiplier (2x at 3-chain, 3x at 6-chain). Delayed tile removal so flash animation plays on old tiles before new ones drop in. ~8 iterations, ~200k tokens.
 
 ### Day 34: Fault Line
 
